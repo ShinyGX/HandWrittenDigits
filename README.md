@@ -14,7 +14,7 @@ KNN算法，是一种简单的机器学习的算法。他的主要思想在于�
 
 > 这么说可能很抽象，引用一个在网络上的例子。比如，你一觉醒来，发现，哇，来到了一颗谜之星球。那么我现在想要知道我在哪，那么使用KNN的思想，那就是，我看天上的星星，然后找出其中离我最近的5颗，发现，有4颗是属于火星的，1颗是月亮的，那么我就可以推测出我在火星了
 
-<img src=".\img\%5CUsers%5CBilly%5CDesktop%5Cknn.jpg">
+<img src=".\img\%255CUsers%255CBilly%255CDesktop%255Cknn.jpg">
 
 在KNN算法当中，除了对特征进行欧式距离的计算，还有一点就是k值的选择。比如上图当中，当一个未知的绿色物体进入的时候，我们应该怎么对其分类呢？要是k比较少就会是黄色的，要是比较大就是蓝色的。过大和过小都有可能造成误差。
 
@@ -116,7 +116,7 @@ float calculateS(Image train, Image test,int *buff)
 
 在BP神经网络当中，网络是由输入层，输出层和隐层组成的。每一个神经层都有着若干的神经细胞，每一个单独的细胞的功能都很小，但是，组合起来可以实现我们想要的效果了。
 
-<img src=".\img\%5CUsers%5CBilly%5CDesktop%5Cnet.png">
+<img src=".\img\%255CUsers%255CBilly%255CDesktop%255Cnet.png">
 
 每一个神经细胞都会有四个参数，活跃度，错误值，上一层神经细胞传入到这个神经细胞的计算的权值（每一个细胞传入到这个细胞的权值都不一定相同），以及上一层传入到这个神经细胞的细胞数量。
 
@@ -366,7 +366,7 @@ void BPNeuronNet::process(double inputs[], double* outputs[])
 
 首先是使用神经网络的运算结果
 
-<img src=".\img\%5CUsers%5CBilly%5CDesktop%5Cnettime.png">
+<img src=".\img\%255CUsers%255CBilly%255CDesktop%255Cnettime.png">
 
 然后是使用KNN算法的运算结果
 
