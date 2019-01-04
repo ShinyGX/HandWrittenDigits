@@ -366,7 +366,7 @@ void BPNeuronNet::process(double inputs[], double* outputs[])
 
 首先是使用神经网络的运算结果
 
-![BP神经网络结果](.\img\%5CUsers%5CBilly%5CDesktop%5Cnettime.png)
+![BP神经网络结果](..\img\%5CUsers%5CBilly%5CDesktop%5Cnettime.png)
 
 然后是使用KNN算法的运算结果
 
