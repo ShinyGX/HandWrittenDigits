@@ -370,6 +370,7 @@ void BPNeuronNet::process(double inputs[], double* outputs[])
 
 然后是使用KNN算法的运算结果
 
+<img src=".\img\knntest.png">
 ![KNN算法结果](.\img\knntest.png)
 
 从这里可以看出，其实神经网络的耗时是比较少的。
