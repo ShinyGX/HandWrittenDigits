@@ -8,6 +8,7 @@
 #include "ProgressBar.h"
 #include <future>
 #include <sys/timeb.h>
+#include <valarray>
 
 //#define NEURON_ENABLE 
 
@@ -63,6 +64,7 @@ void perProcessInputData(const uint8_t *pixel, double* out, int size);
 
 double train(ImageList trainList, BPNeuronNet& bpNeuronNet);
 int test(ImageList testList, BPNeuronNet& bpNeuronNet);
+
 
 int main()
 {
@@ -255,14 +257,15 @@ void loadImageAndLabelFileInThread(std::promise<ImageList> &promiseObj, const st
 
 int knn(ImageList trainList, ImageList testList, int k)
 {
-	std::vector<KnnResult> result(trainList.lenght);
+	//std::vector<KnnResult> result(trainList.lenght);
+	KnnResult* resultArr = new KnnResult[trainList.lenght];
 	int error = 0;
 	int labelCount[10] = { 0 };
 	int* pixelBuff = new int[testList.imageList[0].width * testList.imageList[0].width];
 	//progressBar.reset(testList.lenght, "knn test");
 	for (int i = 0; i < testList.lenght; i++)
 	{
-		result.clear();
+		//result.clear();
 		for (int& j : labelCount)
 		{
 			j = 0;
@@ -273,15 +276,18 @@ int knn(ImageList trainList, ImageList testList, int k)
 		{
 			s = calculateS(trainList.imageList[j], testList.imageList[i], pixelBuff);
 
-			result.emplace_back(trainList.imageList[j].number, s);
+			resultArr[j].label = trainList.imageList[j].number;
+			resultArr[j].s = s;
+			//result.emplace_back(trainList.imageList[j].number, s);
 		}
 
-		std::partial_sort(result.begin(), result.begin() + k, result.end(), knnResultLess);
+		std::partial_sort(resultArr, resultArr + k, resultArr + trainList.lenght - 1, knnResultLess);
+		//std::partial_sort(result.begin(), result.begin() + k, result.end(), knnResultLess);
 		//std::sort(result.begin(), result.end(), knnResultLess);
 
 		for (int l = 0; l < k; l++)
 		{
-			labelCount[result[l].label]++;
+			labelCount[resultArr[l].label]++;
 		}
 
 		int maxNumber = 0, resultNumber = 0;

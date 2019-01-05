@@ -28,13 +28,15 @@ void* ProgressBar::progressThread(void * __this)
 
 ProgressBar::ProgressBar(const int max):max(max),printThread(new thread(&progressThread,static_cast<void *>(this)))
 {	
+	//printThread->detach();
 }
 
 
 ProgressBar::~ProgressBar()
 {
 	stopThread = true;
-	printThread->join();
+	if (printThread->joinable())
+		printThread->join();
 	delete printThread;
 }
 
