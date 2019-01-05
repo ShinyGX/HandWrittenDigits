@@ -83,78 +83,86 @@ int main()
 	t1.join();
 	t2.join();
 
-	testImageList.imageList[1666].print();
+	testImageList.imageList[rand() % testImageList.lenght].print();
 
-#ifdef NEURON_ENABLE
+	int chose;
+	cout << "1-> bp neuron net" << endl;
+	cout << "2-> knn" << endl;
+	cout << "请输入要使用的算法（请输入相应的正确的数字）" << endl;
+	cin >> chose;
 
-	auto startTime = getCurrentTime();
+	if (chose == 1) {
+		auto startTime = getCurrentTime();
 
-	BPNeuronNet bpNeuronNet(trainingImageList.imageList[0].getRow() * trainingImageList.imageList[0].getColomn(), 0.4);
-	bpNeuronNet.addLayer(100);
-	bpNeuronNet.addLayer(10);
-	auto r = train(trainingImageList, bpNeuronNet);
-	cout << "error rate : " << r << endl;
+		BPNeuronNet bpNeuronNet(trainingImageList.imageList[0].getRow() * trainingImageList.imageList[0].getColomn(), 0.4);
+		bpNeuronNet.addLayer(100);
+		bpNeuronNet.addLayer(10);
+		auto r = train(trainingImageList, bpNeuronNet);
+		cout << "error rate : " << r << endl;
 
-	auto success = test(testImageList, bpNeuronNet);
-	cout << "success : " << success << " count : " << testImageList.lenght << endl;
-	cout << "time : " << getCurrentTime() - startTime << endl;
-#else
-	auto startTime = getCurrentTime();
-	cout << "divide train image" << endl;
-	for (int i = 0; i < trainingImageList.lenght; i++)
-	{
-		trainingImageList.imageList[i].divide();
+		auto success = test(testImageList, bpNeuronNet);
+		cout << "success : " << success << " count : " << testImageList.lenght << endl;
+		cout << "time : " << getCurrentTime() - startTime << endl;
+
 	}
+	else if (chose == 2) {
+		auto startTime = getCurrentTime();
+		cout << "divide train image" << endl;
+		for (int i = 0; i < trainingImageList.lenght; i++)
+		{
+			trainingImageList.imageList[i].divide();
+		}
 
-	cout << "divide test image" << endl;
-	for (int i = 0; i < testImageList.lenght; i++)
-	{
-		testImageList.imageList[i].divide();
+		cout << "divide test image" << endl;
+		for (int i = 0; i < testImageList.lenght; i++)
+		{
+			testImageList.imageList[i].divide();
+		}
+
+		ImageList testList1, testList2, testList3, testList4;
+
+		testList4.lenght = testImageList.lenght / 4;
+		testList3.lenght = testImageList.lenght / 4;
+		testList2.lenght = testImageList.lenght / 4;
+		testList1.lenght = testImageList.lenght / 4;
+
+		testList4.imageList = &testImageList.imageList[7500];
+		testList3.imageList = &testImageList.imageList[5000];
+		testList2.imageList = &testImageList.imageList[2500];
+		testList1.imageList = &testImageList.imageList[0];
+
+		promise<int> error1;
+		future<int> ef1 = error1.get_future();
+		promise<int> error2;
+		future<int> ef2 = error2.get_future();
+		promise<int> error3;
+		future<int> ef3 = error3.get_future();
+		promise<int> error4;
+		future<int> ef4 = error4.get_future();
+
+
+		progressBar.reset(testImageList.lenght, "knn test");
+		thread knn1(knnInThread, ref(error1), trainingImageList, testList1, 20);
+		thread knn2(knnInThread, ref(error2), trainingImageList, testList2, 20);
+		thread knn3(knnInThread, ref(error3), trainingImageList, testList3, 20);
+		thread knn4(knnInThread, ref(error4), trainingImageList, testList4, 20);
+
+		knn1.join();
+		knn2.join();
+		knn3.join();
+		knn4.join();
+
+		//	 float result = knn(trainingImageList, testImageList, 20);
+		float result = ef1.get() + ef2.get() + ef3.get() + ef4.get();
+		std::cout << endl << "error :" << result << std::endl;
+		std::cout << "error rate : " << static_cast<float>(result) / testImageList.lenght << endl;
+		cout << "time : " << getCurrentTime() - startTime << endl;
 	}
-
-	ImageList testList1, testList2, testList3, testList4;
-
-	testList4.lenght = testImageList.lenght / 4;
-	testList3.lenght = testImageList.lenght / 4;
-	testList2.lenght = testImageList.lenght / 4;
-	testList1.lenght = testImageList.lenght / 4;
-
-	testList4.imageList = &testImageList.imageList[7500];
-	testList3.imageList = &testImageList.imageList[5000];
-	testList2.imageList = &testImageList.imageList[2500];
-	testList1.imageList = &testImageList.imageList[0];
-
-	promise<int> error1;
-	future<int> ef1 = error1.get_future();
-	promise<int> error2;
-	future<int> ef2 = error2.get_future();
-	promise<int> error3;
-	future<int> ef3 = error3.get_future();
-	promise<int> error4;
-	future<int> ef4 = error4.get_future();
-
-
-	progressBar.reset(testImageList.lenght, "knn test");
-	thread knn1(knnInThread, ref(error1), trainingImageList, testList1, 20);
-	thread knn2(knnInThread, ref(error2), trainingImageList, testList2, 20);
-	thread knn3(knnInThread, ref(error3), trainingImageList, testList3, 20);
-	thread knn4(knnInThread, ref(error4), trainingImageList, testList4, 20);
-
-	knn1.join();
-	knn2.join();
-	knn3.join();
-	knn4.join();
-
-	//	 float result = knn(trainingImageList, testImageList, 20);
-	float result = ef1.get() + ef2.get() + ef3.get() + ef4.get();
-	std::cout << endl << "error :" << result << std::endl;
-	std::cout << "error rate : " << static_cast<float>(result) / testImageList.lenght << endl;
-	cout << "time : " << getCurrentTime() - startTime << endl;
-#endif
 
 	progressBar.shutDown();
 
 	int a;
+	cout << "输入任意键结束" << endl;
 	std::cin >> a;
 	return 0;
 }
