@@ -10,8 +10,6 @@
 #include <sys/timeb.h>
 #include <valarray>
 
-//#define NEURON_ENABLE 
-
 #define big_to_little32(A) ((((uint32_t)(A) & 0xff000000) >> 24) | (((uint32_t)(A) & 0x00ff0000) >> 8) | \
              (((uint32_t)(A) & 0x0000ff00) << 8) | (((uint32_t)(A) & 0x000000ff) << 24))
 
@@ -57,13 +55,13 @@ void loadImageAndLabelFileInThread(std::promise<ImageList> &promiseObj,const std
 int knn(ImageList trainList, ImageList testList, int k);
 void knnInThread(std::promise<int>& errorRate, ImageList trainList, ImageList testList, int k);
 bool knnResultLess(const KnnResult &r1, const KnnResult &r2);
-float calculateS(Image train, Image test,int *buff);
+float calculateS(Image& train, Image& test,int *buff);
 
 void perProcessInputDataWithNoise(const uint8_t *pixel, double * out, int size);
 void perProcessInputData(const uint8_t *pixel, double* out, int size);
 
-double train(ImageList trainList, BPNeuronNet& bpNeuronNet);
-int test(ImageList testList, BPNeuronNet& bpNeuronNet);
+double train(const ImageList& trainList, BPNeuronNet& bpNeuronNet);
+int test(const ImageList& testList, BPNeuronNet& bpNeuronNet);
 
 
 int main()
@@ -316,7 +314,7 @@ inline bool knnResultLess(const KnnResult &r1,const KnnResult &r2)
 	return r1.s < r2.s;
 }
 
-float calculateS(Image train, Image test,int *buff)
+float calculateS(Image& train, Image& test,int *buff)
 {
 	float result = 0;
 
@@ -340,7 +338,7 @@ void knnInThread(std::promise<int>& errorRate,ImageList trainList, ImageList tes
 }
 
 
-double train(const ImageList trainList,BPNeuronNet& bpNeuronNet)
+double train(const ImageList& trainList,BPNeuronNet& bpNeuronNet)
 {
 	double netTarget[10];
 	double netTrain[28 * 28];
@@ -359,7 +357,7 @@ double train(const ImageList trainList,BPNeuronNet& bpNeuronNet)
 	return bpNeuronNet.getError();
 }
 
-int test(ImageList testList,BPNeuronNet& bpNeuronNet)
+int test(const ImageList& testList,BPNeuronNet& bpNeuronNet)
 {
 	int success = 0;
 	double * netOut = nullptr;
